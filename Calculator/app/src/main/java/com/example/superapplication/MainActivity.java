@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onCalcButtonClick(View view){
-startActivity(new Intent(this,CalcActivity.class));
+        startActivity(new Intent(this,CalcActivity.class));
 
     }
 }

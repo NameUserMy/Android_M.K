@@ -74,12 +74,14 @@
                 android:id="@+id/calc_btn_percent"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_percent"
+                android:fontFamily="@font/fasolid900"
 
                 />
             <Button
                 android:id="@+id/calc_btn_div"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_div"
+                android:fontFamily="@font/fasolid900"
 
                 />
         <Button
@@ -104,6 +106,7 @@
                 android:id="@+id/calc_btn_backspace"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_backspace"
+                android:fontFamily="@font/fasolid900"
 
                 />
 
@@ -123,12 +126,14 @@
                 android:id="@+id/calc_btn_sqr"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_sqr"
+                android:fontFamily="@font/icons"
 
                 />
             <Button
                 android:id="@+id/calc_btn_mul"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_mul"
+                android:fontFamily="@font/fasolid900"
 
                 />
         <Button
@@ -172,6 +177,7 @@
                 android:id="@+id/calc_btn_sqrt"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_sqrt"
+                android:fontFamily="@font/fasolid900"
 
                 />
             <Button
@@ -179,6 +185,7 @@
                 android:id="@+id/calc_btn_sub"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_sub"
+                android:fontFamily="@font/fasolid900"
 
                 />
             <Button
@@ -222,18 +229,21 @@
                 android:id="@+id/calc_btn_inv"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_inv"
+                android:fontFamily="@font/icons"
 
                 />
             <Button
                 android:id="@+id/calc_btn_add"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_add"
+                android:fontFamily="@font/fasolid900"
 
                 />
             <Button
                 android:id="@+id/calc_btn_pm"
                 style="@style/calc_btn_digit"
                 android:text="@string/calc_btn_pm"
+                android:fontFamily="@font/fasolid900"
 
                 />
             <Button
@@ -252,6 +262,7 @@
                 android:id="@+id/calc_btn_eq"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_eq"
+                android:fontFamily="@font/fasolid900"
 
                 />
 

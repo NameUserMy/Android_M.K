@@ -15,5 +15,16 @@
     <style name="calc_btn_digit" parent="calc_btn">
         <item name="android:background">@drawable/calc_btn_digit</item>
     </style>
+
+    <style name="calc_btn_equal" parent="calc_btn">
+        <item name="android:background">@drawable/calc_btn_equal</item>
+    </style>
+
+    <style name="calc_btn_zero" parent="calc_btn">
+        <item name="android:background">@drawable/calc_btn_digit</item>
+        <item name="android:fontFamily">@font/fabrands400</item>
+        <item name="android:text">&#x30;</item>
+
+    </style>
 </resources>
 
