@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="date_range">
+
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/date_color</item>
+
+    </style>
+    <style name="rate_layout" >
+
+        <item name="android:background">@drawable/rate_layout</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_margin">7dp</item>
+        <item name="android:paddingHorizontal">10dp</item>
+        <item name="android:paddingVertical">5dp</item>
+
+    </style>
+
+</resources>
+
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="vertical"-->
+<!--    android:background="@color/rate_layout_fg"-->
+<!--    android:layout_margin="7dp"-->
+<!--    android:paddingHorizontal="10dp"-->
+<!--    android:paddingVertical="5dp"-->
