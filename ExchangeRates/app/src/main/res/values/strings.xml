@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ExchangeRates</string>
+    <!--     region Rates   -->
+    <string name="app_Title">Exchange Rates NBU</string>
+    <string name="date_rate">date</string>
+    <string name="main_button_anim">Animation</string>
+    <string name="anim_tv_title">Animation</string>
+    <string name="anim_tv_alpha">Opacity</string>
+    <string name="anim_tv_rotate">Rotate</string>
+    <string name="anim_tv_scale">Scale</string>
+    <!--  endregion  -->
+</resources>
