@@ -65,18 +65,21 @@
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_percent"
                 android:fontFamily="@font/fasolid900"
+                android:tag="%"
 
                 />
             <Button
                 android:id="@+id/calc_btn_ce"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_ce"
+                android:tag="CE"
 
                 />
             <Button
                 android:id="@+id/calc_btn_c"
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_c"
+                android:tag="C"
 
                 />
             <Button
@@ -111,6 +114,7 @@
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_sqr"
                 android:fontFamily="@font/icons"
+                android:tag="sqr"
 
                 />
             <Button
@@ -118,6 +122,7 @@
                 style="@style/calc_btn_func"
                 android:text="@string/calc_btn_sqrt"
                 android:fontFamily="@font/fasolid900"
+                android:tag="√"
 
                 />
             <Button

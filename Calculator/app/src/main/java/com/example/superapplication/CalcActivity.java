@@ -36,8 +36,7 @@ public class CalcActivity extends AppCompatActivity {
         tvResult = findViewById(R.id.calc_tv_result);
         zero = getString(R.string.calc_btn_0);
 
-        Button btnC = findViewById(R.id.calc_btn_c);
-        btnC.setOnClickListener(this::onClearClick);
+
 
         findViewById(R.id.calc_btn_0).setOnClickListener(this::onDigitClick);
         findViewById(R.id.calc_btn_1).setOnClickListener(this::onDigitClick);
@@ -52,14 +51,21 @@ public class CalcActivity extends AppCompatActivity {
         findViewById(R.id.calc_btn_dot).setOnClickListener(this::onDigitClick);
 
 
+
         findViewById(R.id.calc_btn_add).setOnClickListener(this::onArithmeticsClick);
         findViewById(R.id.calc_btn_mul).setOnClickListener(this::onArithmeticsClick);
         findViewById(R.id.calc_btn_div).setOnClickListener(this::onArithmeticsClick);
         findViewById(R.id.calc_btn_sub).setOnClickListener(this::onArithmeticsClick);
         findViewById(R.id.calc_btn_eq).setOnClickListener(this::onArithmeticsClick);
+        findViewById(R.id.calc_btn_percent).setOnClickListener(this::onPrecentClick);
+        findViewById(R.id.calc_btn_sqr).setOnClickListener(this::onSqrClick);
+        findViewById(R.id.calc_btn_sqrt).setOnClickListener(this::onSqrtClick);
         findViewById(R.id.calc_btn_backspace).setOnClickListener(this::onBackspaceClick);
+        findViewById(R.id.calc_btn_c).setOnClickListener(this::onClearClick);
+        findViewById(R.id.calc_btn_ce).setOnClickListener(this::onClearClick);
 
-        onClearClick(btnC);
+
+
     }
 
     @Override
@@ -77,8 +83,31 @@ public class CalcActivity extends AppCompatActivity {
 
     }
 
+
+    private void onPrecentClick(View view){
+
+        tvResult.setText("0.3");
+        //tvExpression.setText();
+
+    }
+    private void onSqrClick(View view){
+
+        double operndSqr=Double.parseDouble(tvResult.getText().toString());
+        String expretionView=String.format("%s(%s)",view.getTag().toString(),tvResult.getText().toString());
+        tvExpression.setText(expretionView);
+        tvResult.setText(Isdouble(String.valueOf(operndSqr*operndSqr)));
+
+    }
+    private void onSqrtClick(View view){
+        double operndSqrt=Double.parseDouble(tvResult.getText().toString());
+        String expretionView=String.format("%s(%s)",view.getTag().toString(),tvResult.getText().toString());
+        tvExpression.setText(expretionView);
+        tvResult.setText(Isdouble(String.valueOf(Math.sqrt(operndSqrt))));
+
+    }
     private void onArithmeticsClick(View view) {
         String operation = view.getTag().toString();
+
 
         if (tvExpression.getText().toString().isBlank()) {
             tvExpression.setText(tvResult.getText().toString() + " " + operation);
@@ -124,27 +153,34 @@ public class CalcActivity extends AppCompatActivity {
         }
 
     }
-
     private void onClearClick(View view) {
 
+        String operation = view.getTag().toString();
+        if(operation.equals("CE")){
 
-        tvExpression.setText("");
-        tvResult.setText(zero);
-        this.isSecond = false;
+            tvResult.setText(zero);
+            this.isSecond = false;
+        }else {
+
+            tvExpression.setText("");
+            tvResult.setText(zero);
+            this.isSecond = false;
+        }
+
+
 
     }
     private void onBackspaceClick(View view){
 
       String backspaceText= tvResult.getText().toString();
-
       tvResult.setText(backspaceText.substring(0,backspaceText.length()-1));
-
 
     }
     private void arithmeticsOperation(String operation) {
 
         String[] expression = tvExpression.getText().toString().split(" ");
         String result = String.valueOf(result(expression, tvResult.getText().toString()));
+
         if (operation.equals("=")) {
 
             tvExpression.setText(tvExpression.getText().toString() + " " + tvResult.getText().toString() + "" + operation);
@@ -155,12 +191,12 @@ public class CalcActivity extends AppCompatActivity {
         } else {
             tvExpression.setText(result + " " + operation);
             tvResult.setText(result);
-
         }
+
+
         isSecond = false;
 
     }
-
     private String result(String[] parseExpretion, String second) {
 
         double firstOperant = Double.parseDouble(parseExpretion[0]);
@@ -181,7 +217,13 @@ public class CalcActivity extends AppCompatActivity {
             case "/":
                 value = String.valueOf(firstOperant / secondOperant);
                 break;
+
         }
+
+      return   Isdouble(value);
+    }
+
+    private String Isdouble(String value){
 
         String[] isDouble = value.split("\\.");
 
@@ -195,6 +237,5 @@ public class CalcActivity extends AppCompatActivity {
             }
             return value;
         }
-
     }
 }
