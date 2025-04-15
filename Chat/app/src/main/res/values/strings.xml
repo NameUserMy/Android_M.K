@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Chat</string>
+    <string name="title">The super puper chat</string>
+    <string name="chat_tv_author">Author</string>
+    <string name="chat_author_hint">Your nick name</string>
+    <string name="chat_send_hint">Send message</string>
+    <string name="chat_message_hint">Enter message</string>
+    <string name="chat_conten_hint">Last message</string>
+    <string name="chat_msg_no_author">Enter your nick</string>
+    <string name="chat_msg_no_text">Enter your message</string>
+    <string name="chat_msg_no_send">Send is stop</string>
+    <string name="chat_msg_no_send_btn">Understood</string>
+</resources>
