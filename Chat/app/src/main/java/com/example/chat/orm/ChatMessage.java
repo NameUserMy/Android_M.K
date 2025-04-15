@@ -46,7 +46,8 @@ public class ChatMessage {
         chatMessage.setAuthor(jsonObject.getString("author"));
         chatMessage.setText(jsonObject.getString("text"));
         try {
-            chatMessage.setMoment(dateFormat.parse(jsonObject.getString("moment")));
+            chatMessage.setMoment(dateFormat.parse(jsonObject.getString("moment"))
+            );
         }catch (ParseException ex){
 
             throw new JSONException(ex.getMessage());

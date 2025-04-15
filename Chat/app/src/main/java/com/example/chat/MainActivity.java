@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         List<ChatMessage> res = new ArrayList<>();
         try {
 
-            JSONObject root=new JSONObject(body);//TODO check status
+            JSONObject root=new JSONObject(body);
 
             if(root.getInt("status")==1){
                 JSONArray arr=root.getJSONArray("data");
