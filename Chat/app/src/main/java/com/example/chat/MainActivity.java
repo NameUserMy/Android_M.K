@@ -120,10 +120,9 @@ public class MainActivity extends AppCompatActivity {
         }
         CompletableFuture.runAsync(
         ()->sendChatMessage(new ChatMessage(author,message)),
-        pool
-
-);
-
+        pool);
+        etAuthor.setEnabled(false);
+        etMessage.setText("");
     }
     private void sendChatMessage(ChatMessage chatMessage){
 
