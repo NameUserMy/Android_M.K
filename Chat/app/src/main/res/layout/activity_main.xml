@@ -39,6 +39,13 @@
             android:inputType="text"
             />
 
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_remember"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chat_msg_no_remember"
+            app:switchPadding="7dp" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

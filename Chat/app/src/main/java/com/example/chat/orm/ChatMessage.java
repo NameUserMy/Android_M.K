@@ -1,5 +1,8 @@
 package com.example.chat.orm;
 
+import android.database.Cursor;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,6 +13,7 @@ import java.util.Locale;
 
 public class ChatMessage {
     public final  static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ROOT);
+    public final  static SimpleDateFormat sqliteFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy", Locale.ENGLISH);
     private String id;
     private String author;
     private String text;
@@ -51,6 +55,25 @@ public class ChatMessage {
         }catch (ParseException ex){
 
             throw new JSONException(ex.getMessage());
+
+        }
+        return chatMessage;
+
+    }
+    public static ChatMessage  fromCursor(Cursor cursor){
+
+        ChatMessage chatMessage=new ChatMessage();
+
+        chatMessage.setId(cursor.getString(0));
+        chatMessage.setAuthor(cursor.getString(1));
+        chatMessage.setText(cursor.getString(2));
+        try{
+            chatMessage.setMoment(sqliteFormat.parse(cursor.getString(3)));
+
+
+        } catch (Exception ex) {
+
+            Log.e("fromCursor",ex.getClass().getName()+" "+ex.getMessage());
 
         }
         return chatMessage;

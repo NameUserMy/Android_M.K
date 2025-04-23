@@ -1,6 +1,16 @@
 package com.example.chat;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -8,6 +18,10 @@ import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -21,6 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -39,17 +56,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import  android.os.Handler;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private static final String  chatUrl="https://chat.momentfor.fun/";
+    private static final String authorFileName="author.name";
+    private static final String chanelId="CHAT-CHANEL";
+    private static final String appDatabase="chat_db";
     private ExecutorService pool;
-    private final List<ChatMessage> messages=new ArrayList<>();
+    private  final List<ChatMessage> messages=new ArrayList<>();
     private EditText etAuthor;
     private EditText etMessage;
-
+    private SwitchCompat scRemember;
     private final Handler hendler =new Handler();
-
     private RecyclerView rvContent;
+    private boolean isFirstSend;
+    private  int postGranted=-1;
     private ChatMessageAdapter chatMessageAdapter;
 
     @Override
@@ -71,7 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         etAuthor = findViewById(R.id.chat_et_author);
+        etAuthor.setText(loadAuthor());
         etMessage =  findViewById(R.id.chat_et_message);
+        scRemember=findViewById(R.id.switch_remember);
+        scRemember.setChecked(true);
+        isFirstSend=true;
 
         rvContent=findViewById(R.id.chat_rv_content);
         chatMessageAdapter=new ChatMessageAdapter(messages);
@@ -81,8 +107,78 @@ public class MainActivity extends AppCompatActivity {
         rvContent.setLayoutManager(layoutManager);
         rvContent.setAdapter(chatMessageAdapter);
         findViewById(R.id.chat_btn_send).setOnClickListener(this::onSendClick);
+        CompletableFuture.runAsync(this::restoreMessage,pool);
+        registerChannel();
+        Intent intent=getIntent();
+        if(intent!=null){
+
+            String messageId=intent.getStringExtra("message_id");
+
+            if(messageId!=null){
+                Log.i("chat","Forwarded from notification " + messageId );
+            }
+        }
 
     }
+
+    private void registerChannel(){
+        NotificationChannel channel =new NotificationChannel(
+                chanelId,
+                "Chat notificatons",
+                NotificationManager.IMPORTANCE_DEFAULT
+        );
+
+        channel.setDescription("Notifications about new incoming messages");
+        getSystemService(NotificationManager.class).createNotificationChannel(channel);
+    }
+    private  void makeNotification(){
+
+        if (ActivityCompat.checkSelfPermission(this,android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                postGranted=0;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},234);
+            }
+
+            return;
+        }
+
+        postGranted=1;
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("message_id","123");
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder buildeer=new NotificationCompat.Builder(this,chanelId)
+                .setSmallIcon(android.R.drawable.btn_star_big_on)
+                .setContentTitle("Chat")
+                .setContentText("New incoming message")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                // Set the intent that fires when the user taps the notification.
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+        NotificationManagerCompat.from(this).notify(123,buildeer.build());
+
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,int[] grantResults){
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+           if(requestCode==234){
+
+               if(grantResults[0]!= PackageManager.PERMISSION_GRANTED){
+
+                   Toast.makeText(this,"No message",Toast.LENGTH_SHORT).show();
+                   postGranted=0;
+
+               }else {
+
+                   postGranted=1;
+               }
+
+           }
+       }
+
     private void updateChate(){
 
         CompletableFuture
@@ -118,12 +214,114 @@ public class MainActivity extends AppCompatActivity {
                 .show();
           return;
         }
+        if(isFirstSend){
+
+            isFirstSend=false;
+            if(scRemember.isChecked()){
+
+                saveAuthor(author);
+
+
+            }
+
+        }
         CompletableFuture.runAsync(
         ()->sendChatMessage(new ChatMessage(author,message)),
         pool);
         etAuthor.setEnabled(false);
         etMessage.setText("");
     }
+    private void saveMessages(){
+        try(SQLiteDatabase db=openOrCreateDatabase(appDatabase,Context.MODE_PRIVATE,null)){
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS chat_history(id ROWID," +
+                    "author VARCHAR(128), " +
+                    "text VARCHAR(512)," +
+                    "moment DATETIME)");
+
+            for (ChatMessage chatMessage:messages){
+                db.execSQL("INSERT INTO chat_history VALUES(?,?,?,?)",
+                        new Object[]{
+                                Integer.parseInt(chatMessage.getId() ),
+                                chatMessage.getAuthor(),
+                                chatMessage.getText(),
+                                chatMessage.getMoment()
+
+                        });
+            }
+
+        }catch (Exception ex){
+
+            Log.e("saveMessages",ex.getClass().getName()+" "+ex.getMessage());
+        }
+
+    }
+    public synchronized void addCollect(ChatMessage message){
+        messages.add(message);
+    }
+    private void restoreMessage(){
+
+        try(SQLiteDatabase db=openOrCreateDatabase(appDatabase,Context.MODE_PRIVATE,null);
+            Cursor cursor= db.rawQuery("SELECT * FROM chat_history",null))
+        {
+            if (cursor.moveToFirst()){
+
+                do {
+                    if( messages.stream().noneMatch(cm->cm.getId().equals(cursor.getString(0))) ){
+                        addCollect( ChatMessage.fromCursor( cursor ));
+                    }
+                }while (cursor.moveToNext());
+
+            }
+        }catch (Exception ex){
+
+            Log.e("saveMessages",ex.getClass().getName()+" "+ex.getMessage());
+        }
+
+    }
+    private void processChatResponse(List<ChatMessage> parsedMessage){
+        int oldsize=messages.size();
+        for (ChatMessage m: parsedMessage){
+            if( messages.stream().noneMatch(cm->cm.getId().equals(m.getId())) ){
+                addCollect(m);
+            }
+        }
+        int newSize=messages.size();
+        if(newSize>oldsize){
+            messages.sort(Comparator.comparing(ChatMessage::getMoment));
+            runOnUiThread(()-> {
+                chatMessageAdapter.notifyItemRangeChanged(oldsize, newSize);
+                rvContent.scrollToPosition(newSize-1);
+                if(oldsize!=0&&postGranted!=0){
+                    makeNotification();
+                }
+            });
+
+        }
+
+
+    }
+    private void saveAuthor(String name){
+
+        try(FileOutputStream fos= openFileOutput(authorFileName, Context.MODE_PRIVATE)){
+            fos.write(name.getBytes(StandardCharsets.UTF_8));
+        }  catch (IOException e) {
+            Log.e("saveAuthor","IOException "+e.getMessage());
+        }
+
+
+    }
+    private String loadAuthor(){
+
+        try(FileInputStream fis= openFileInput(authorFileName)){
+           return Services.readAllText(fis);
+        }  catch (IOException e) {
+            Log.e("loadAuthor","IOException "+e.getMessage());
+        }
+
+        return "";
+    }
+
     private void sendChatMessage(ChatMessage chatMessage){
 
         String charset= StandardCharsets.UTF_8.name();
@@ -180,24 +378,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-    private void processChatResponse(List<ChatMessage> parsedMessage){
-        int oldsize=messages.size();
-        for (ChatMessage m: parsedMessage){
-            if( messages.stream().noneMatch(cm->cm.getId().equals(m.getId())) ){
-                messages.add(m);
-            }
-        }
-        int newSize=messages.size();
-        if(newSize>oldsize){
-            messages.sort(Comparator.comparing(ChatMessage::getMoment));
-            runOnUiThread(()-> {
-                chatMessageAdapter.notifyItemRangeChanged(oldsize, newSize);
-                rvContent.scrollToPosition(newSize-1);
-            });
-        }
 
 
-    }
     private List<ChatMessage> parseChatResponse(String body){
         List<ChatMessage> res = new ArrayList<>();
         try {
@@ -233,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         hendler.removeMessages(0);
         pool.shutdown();
+        saveMessages();
         super.onDestroy();
     }
 }
